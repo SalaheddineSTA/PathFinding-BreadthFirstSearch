@@ -1,0 +1,125 @@
+
+PImage img;
+int tour;
+int i,j, w, h;
+float r,g,b;
+int [][]obst={{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,0,0,0,0,0,2,0,0,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+        {1,0,0,3,0,0,0,0,0,0,1,1,0,0,0,1},
+        {1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,1},
+        {1,0,0,0,1,0,0,1,1,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1},
+        {1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1},
+        {1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1},
+        {1,0,0,0,0,1,0,0,0,0,0,0,0,1,1,1},
+        {1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}}; 
+        
+class struct{
+  public int i;
+  public int j;
+  public struct (){
+    
+  }
+  public struct (int i,int j){
+    this.i=i;
+    this.j=j;
+  }
+}
+
+ArrayList<struct> queue= new ArrayList<struct>();
+int boti,botj;
+int obji,objj;
+boolean bol=false;
+
+void checkChild(int i, int j){
+  
+  if(obst[i][j-1]==0) {queue.add(new struct (i,j-1));obst[i][j-1]=4;} 
+    else if(obst[i][j-1]==3) {bol=true;obji=i;objj=j-1;}
+    
+/*  if(obst[i+1][j-1]==0) {queue.add(new struct (i+1,j-1));obst[i+1][j-1]=4;} 
+    else if(obst[i+1][j-1]==3){bol=true;obji=i+1;objj=j-1;}*/
+    
+  if(obst[i+1][j]==0) {queue.add(new struct (i+1,j));obst[i+1][j]=4;} 
+    else if(obst[i+1][j]==3){bol=true;obji=i+1;objj=j;}
+    
+/*  if(obst[i+1][j+1]==0) {queue.add(new struct (i+1,j+1));obst[i+1][j+1]=4;} 
+    else if(obst[i+1][j+1]==3){bol=true;obji=i+1;objj=j+1;}*/
+    
+  if(obst[i][j+1]==0) {queue.add(new struct (i,j+1));obst[i][j+1]=4;} 
+    else if(obst[i][j+1]==3){bol=true;obji=i;objj=j+1;}
+/*
+  if(obst[i-1][j+1]==0) {queue.add(new struct (i-1,j+1));obst[i-1][j+1]=4;} 
+    else if(obst[i-1][j+1]==3){bol=true;obji=i-1;objj=j+1;}  
+*/
+  if(obst[i-1][j]==0) {queue.add(new struct (i-1,j));obst[i-1][j]=4;} 
+    else if(obst[i-1][j]==3){bol=true;obji=i-1;objj=j;}
+    
+ /* if(obst[i-1][j-1]==0) {queue.add(new struct (i-1,j-1));obst[i-1][j-1]=4;} 
+    else if(obst[i-1][j-1]==3){bol=true;obji=i-1;objj=j-1;}*/
+}
+
+
+
+void setup() {
+  size(512, 512);
+  img = loadImage("im.jpg");
+ w=img.width;
+ h=img.height;
+ tour=0;
+ loadPixels();
+  img.loadPixels();
+}
+
+void draw() { 
+for (int x = 0; x < w; x++ ) {
+    for (int y = 0; y < h; y++ ) {
+
+     int loc = x + y*w;
+      int stepx=w/16;
+      int stepy=h/16;
+      i= y/stepy; j=x/stepx;
+      int val=obst[i][j];
+      
+      switch (val)
+      {
+        case 0: r= 0; g=0; b=0; break;
+        case 1: r= 0; g=0; b=255; break;
+        case 2: r= 255; g=0; b=0; boti=i; botj=j; checkChild(i,j); break;
+        case 3: r= 0; g=255; b=0; break;
+        case 4: r= 255; g=255; b=255; break;
+        case 5: r=0;g=255;b=255; break;
+        default :break;
+      }      
+      color c = color(r, g, b);
+      pixels[loc]=c;      
+    }
+    
+  }
+ // print("["+boti+"-"+botj+"] /" +bol +"\n");
+  print("size:" +queue.size());
+  
+  int k=0;
+  struct s;
+  if(bol== true) {print("["+obji+"-"+objj+"] /"+ bol +"\n");}
+  else{
+        if(k<queue.size() && bol==false) {
+          s=new struct(queue.get(k).i,queue.get(k).j);
+          obst[boti][botj]=5;
+          boti=s.i; botj=s.j;
+          obst[s.i][s.j]=2;
+         checkChild(s.i,s.j);
+         queue.remove(k);
+         k++;
+    }
+  }
+  updatePixels(); 
+  delay(100);
+  if(tour==-1){exit();}
+  
+}
